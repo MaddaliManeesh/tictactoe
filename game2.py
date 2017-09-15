@@ -1,8 +1,10 @@
+import time
 import datetime
 import random
 import pygame
 import copy
 from pygame.locals import *
+pygame.mixer.init()
 # def printing(screen,row,row2,coloumn,coloumn2,x,o,ant,bat,cat,dog,eat,fish,goat,hat,ink,jug,knife,lamp,man,nill,oil,pant,quit,rat,a1,a2,b1,b2,c1,c2,d1,d2,e1,e2,f1,f2,g1,g2,h1,h2,i1,i2):
 def screen_print(tic,screen,x,o):
     if tic[0][0] == 'x':
@@ -183,45 +185,44 @@ def rect(board):
     box8 = pygame.draw.rect(board, (255, 255, 255), (92, 182, 86, 86))
     box9 = pygame.draw.rect(board, (255, 255, 255), (182, 182, 86, 86))
     return box1,box2,box3,box4,box5,box6,box7,box8,box9
-def replay(board,store,screen,x,o):
-    screen.blit(board,(0,0))
-    for i in range(len(store)):
-        if store[i][0][0] == 'x':
-            screen.blit(x, (0, 0))
-        if store[i][0][0] == 'o':
-            screen.blit(o, (0, 0))
-        if store[i][0][1] == 'x':
-            screen.blit(x, (92,0))
-        if store[i][0][1] == 'o':
-            screen.blit(o, (92, 0))
-        if store[i][0][2] == 'x':
-            screen.blit(x, (182,0))
-        if store[i][0][2] == 'o':
-            screen.blit(o, (182, 0))
-        if store[i][1][0] == 'x':
-            screen.blit(x, (0, 92))
-        if store[i][1][0] == "o":
-            screen.blit(o, (0, 92))
-        if store[i][1][1] == "x":
-            screen.blit(x, (92, 92))
-        if store[i][1][1] == "o":
-            screen.blit(o, (92, 92))
-        if store[i][1][2] == "x":
-            screen.blit(x, (182, 92))
-        if store[i][1][2] == "o":
-            screen.blit(o, (182, 92))
-        if store[i][2][0] == "x":
-            screen.blit(x, (0, 182))
-        if store[i][2][0] == "o":
-            screen.blit(o, (0, 182))
-        if store[i][2][1] == "x":
-            screen.blit(x, (92, 182))
-        if store[i][2][1] == "o":
-            screen.blit(o, (92, 182))
-        if store[i][2][2] == "x":
-            screen.blit(x, (182, 182))
-        if store[i][2][2] == "o":
-            screen.blit(o, (182, 182))
+def replay(board,store,screen,x,o,i):
+    print store
+    if store[i][0][0] == 'x':
+        screen.blit(x, (0, 0))
+    if store[i][0][0] == 'o':
+        screen.blit(o, (0, 0))
+    if store[i][0][1] == 'x':
+        screen.blit(x, (92,0))
+    if store[i][0][1] == 'o':
+        screen.blit(o, (92, 0))
+    if store[i][0][2] == 'x':
+        screen.blit(x, (182,0))
+    if store[i][0][2] == 'o':
+        screen.blit(o, (182, 0))
+    if store[i][1][0] == 'x':
+        screen.blit(x, (0, 92))
+    if store[i][1][0] == "o":
+        screen.blit(o, (0, 92))
+    if store[i][1][1] == "x":
+        screen.blit(x, (92, 92))
+    if store[i][1][1] == "o":
+        screen.blit(o, (92, 92))
+    if store[i][1][2] == "x":
+        screen.blit(x, (182, 92))
+    if store[i][1][2] == "o":
+        screen.blit(o, (182, 92))
+    if store[i][2][0] == "x":
+        screen.blit(x, (0, 182))
+    if store[i][2][0] == "o":
+        screen.blit(o, (0, 182))
+    if store[i][2][1] == "x":
+        screen.blit(x, (92, 182))
+    if store[i][2][1] == "o":
+        screen.blit(o, (92, 182))
+    if store[i][2][2] == "x":
+        screen.blit(x, (182, 182))
+    if store[i][2][2] == "o":
+        screen.blit(o, (182, 182))
 def click(pos,box1,box2,box3,box4,box5,box6,box7,box8,box9,row,coloumn):
     if box1.collidepoint(pos):
         row = 1
@@ -489,6 +490,8 @@ def Daily_Stats(scorelist,font,b):
 def Single_Player(score,youwon,youlose,restart,scorelist,name,font1,draw):
     pygame.init()
     tic, check, count, count1, screen, board, x, o, row, row2, coloumn, coloumn2,store = start()
+    clicksound=pygame.mixer.Sound("click sound.wav")
+    close=pygame.mixer.Sound("close.wav")
     store.append(copy.deepcopy(tic))
     tic = store[len(store)-1]
     running = 1
@@ -501,8 +504,10 @@ def Single_Player(score,youwon,youlose,restart,scorelist,name,font1,draw):
             if event.type == pygame.KEYDOWN:
                 if event.key == K_BACKSPACE:
                     del store[len(store)-1]
+                    close.play()
                     print store
             if event.type == pygame.MOUSEBUTTONDOWN:
+                clicksound.play()
                 pos = pygame.mouse.get_pos()
                 row, row1, coloumn, coloumn1 = click(pos, box1, box2, box3, box4, box5, box6, box7, box8, box9, row,
                                                      coloumn)
@@ -512,6 +517,7 @@ def Single_Player(score,youwon,youlose,restart,scorelist,name,font1,draw):
                 row2, coloumn2, count, count1,store = computer_play(tic, check, count,store)
             if event.type == KEYDOWN:
                 if event.key == K_r:
+                    clicksound.play()
                     playagain()
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -557,18 +563,23 @@ def Single_Player(score,youwon,youlose,restart,scorelist,name,font1,draw):
         score = str(score)
         scorelist.write(datetime.date.today().strftime("%d-%m-%y"))
         scorelist.write("%s --> %s\n" % (name, score))
+    i=0
     while 1:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                close.play()
                 pygame.quit()
                 exit(0)
             if event.type == KEYDOWN:
                 if event.key == K_r:
                     playagain()
                 if event.key == K_l:
-                    replay(board,tic, screen, x, o)
+                    screen.blit(board, (0, 0))
+                    replay(board,store, screen, x, o,i)
+                    if event.key == K_p:
+                        i = i + 1
         pygame.display.flip()
-    return store
+    return store,close
 def playagain():
     scorelist = open("filetest.txt", "a+")
     pygame.init()
@@ -577,6 +588,7 @@ def playagain():
     font1 = pygame.font.Font(None,30)
     font2 = pygame.font.SysFont("comicsansms",40)
     tictactoe = pygame.image.load("TicTacToe.png")
+    select=pygame.mixer.Sound("Ding.wav")
     score=0
     a=0
     name=""
@@ -623,14 +635,15 @@ def playagain():
                 if event.key == K_RETURN:
                     startgame=1
             if event.type==pygame.MOUSEBUTTONDOWN:
+                select.play()
                 if rect4.collidepoint(pygame.mouse.get_pos()):
-                   test_play(score,youwon,youlose,draw,restart,font1)
+                    test_play(score,youwon,youlose,draw,restart,font1)
                 if rect5.collidepoint(pygame.mouse.get_pos()):
                     leader_board(scorelist,screen,font)
                 if rect3.collidepoint(pygame.mouse.get_pos()):
                     Daily_Stats(scorelist, font,b)
                 if rect1.collidepoint(pygame.mouse.get_pos()):
-                    store=Single_Player(score,youwon,youlose,restart,scorelist,name,font1,draw)
+                    store,close=Single_Player(score,youwon,youlose,restart,scorelist,name,font1,draw)
                 if rect2.collidepoint(pygame.mouse.get_pos()):
                     tic, check, count, count1, screen, board, x, o, row, row2, coloumn, coloumn2,store = start()
                     running=1
@@ -806,6 +819,7 @@ def playagain():
                                 exit(0)
                             if event.type == KEYDOWN:
                                 if event.key == K_r:
+                                    close.play()
                                     playagain()
                         pygame.display.flip()
             if event.type==pygame.QUIT:
